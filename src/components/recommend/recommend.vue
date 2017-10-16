@@ -1,31 +1,50 @@
 <template>
 	<div class="recommend" ref="recommend">
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <div  v-if="sliderList.length" class="slider-wrapper">
+        <div v-if="sliderList.length" class="slider-wrapper">
           <slider>
             <div v-for="(item, index) in sliderList">
             	<a :href="item.linkUrl">
-            		<img :src="item.picUrl">
+            		<img class="needsclick" :src="item.picUrl" @load="imageLoad">
             	</a>
             </div>
           </slider>
         </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="item in discList" class="item">
+              <div class="icon">
+                <img width="60" height="60" :src="item.cover_url_small">
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.creator_info.nick}}</h2>
+                <p class="desc">{{item.title}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
+    </scroll>
   </div>
 </template>
 
 <script type="text/babel">
-import { getRecommend } from 'api/recommend'
+import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
+import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 export default {
   data () {
     return {
-      sliderList: []
+      sliderList: [],
+      discList: []
     }
   },
   created () {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
     _getRecommend () {
@@ -34,10 +53,25 @@ export default {
           this.sliderList = res.data.slider
         }
       })
+    },
+    _getDiscList () {
+      getDiscList().then((res) => {
+        if (res.data.code === ERR_OK) {
+          this.discList = res.data.playlist.data.v_playlist
+          console.log(this.discList)
+        }
+      })
+    },
+    imageLoad () {
+      if (this.checkImgLoad) {
+        this.$refs.scroll.refresh()
+        this.checkImgLoad = true
+      }
     }
   },
   components: {
-    Slider
+    Slider,
+    Scroll
   }
 }
 </script>
