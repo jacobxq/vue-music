@@ -16,7 +16,7 @@
           <ul>
             <li v-for="item in discList" class="item">
               <div class="icon">
-                <img width="60" height="60" :src="item.cover_url_small">
+                <img width="60" height="60" v-lazy="item.cover_url_small">
               </div>
               <div class="text">
                 <h2 class="name">{{item.creator_info.nick}}</h2>
@@ -25,6 +25,9 @@
             </li>
           </ul>
         </div>
+      </div>
+      <div class="loading-container" v-if="showLoading">
+        <loading></loading>
       </div>
     </scroll>
   </div>
@@ -35,11 +38,13 @@ import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
+import Loading from 'base/loading/loading'
 export default {
   data () {
     return {
       sliderList: [],
-      discList: []
+      discList: [],
+      showLoading: true
     }
   },
   created () {
@@ -58,7 +63,7 @@ export default {
       getDiscList().then((res) => {
         if (res.data.code === ERR_OK) {
           this.discList = res.data.playlist.data.v_playlist
-          console.log(this.discList)
+          this.showLoading = false
         }
       })
     },
@@ -71,7 +76,8 @@ export default {
   },
   components: {
     Slider,
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
