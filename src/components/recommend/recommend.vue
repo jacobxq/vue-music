@@ -40,7 +40,7 @@ import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 import Loading from 'base/loading/loading'
 export default {
-  data () {
+  data() {
     return {
       sliderList: [],
       discList: [],
@@ -52,14 +52,14 @@ export default {
     this._getDiscList()
   },
   methods: {
-    _getRecommend () {
+    _getRecommend() {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
           this.sliderList = res.data.slider
         }
       })
     },
-    _getDiscList () {
+    _getDiscList() {
       getDiscList().then((res) => {
         if (res.data.code === ERR_OK) {
           this.discList = res.data.playlist.data.v_playlist
@@ -67,7 +67,7 @@ export default {
         }
       })
     },
-    imageLoad () {
+    imageLoad() {
       if (this.checkImgLoad) {
         this.$refs.scroll.refresh()
         this.checkImgLoad = true

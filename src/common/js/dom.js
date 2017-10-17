@@ -1,4 +1,4 @@
-export function addClass (el, className) {
+export function addClass(el, className) {
   if (!hadClass(el, className)) {
     let newClass = el.className.split(' ')
     newClass.push(className)
@@ -6,7 +6,7 @@ export function addClass (el, className) {
   }
 }
 
-export function hadClass (el, className) {
+export function hadClass(el, className) {
   if (el.className.indexOf(className) > 0) {
     return true
   }
