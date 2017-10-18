@@ -4,6 +4,7 @@
           :probe-type="probeType"
           ref="listview"
           :data="data"
+          @scroll="scroll"
   >
     <ul>
       <li v-for="(group, index) in data" class="list-group" ref="listGroup">
@@ -18,10 +19,20 @@
     </ul>
     <div class="list-slide-bar" @touchstart.stop.prevent="onSlideBarTouchStart" @touchmove.stop.prevent="onSlideBarTouchMove">
       <ul>
-        <li class="item" v-for="(item, index) in slideBarList" :data-index="index">
+        <li class="item" 
+            v-for="(item, index) in slideBarList" 
+            :data-index="index"
+            :class="{'current': currentIndex == index}"
+        >
           {{item}}
         </li>
       </ul>
+    </div>
+    <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{fixedTitle}} </div>
+    </div>
+    <div v-show="!data.length" class="loading-content">
+      <loading></loading>
     </div>
   </scroll>
 </template>
@@ -29,7 +40,9 @@
 <script type="text/bable">
 import Scroll from 'base/scroll/scroll'
 import { getData } from 'common/js/dom'
+import Loading from 'base/loading/loading'
 
+const TITLE_HEIGHT = 30
 const SLIDEBAR_HEIGHT = 18
 
 export default {
@@ -41,20 +54,32 @@ export default {
   },
   data() {
     return {
-      probeType: 3,
-      listenScroll: true,
-      touch: {}
+      scrollY: -1,
+      currentIndex: 0,
+      diff: -1
     }
+  },
+  created () {
+    this.probeType = 3
+    this.listenScroll = true
+    this.touch = {},
+    this.listHeight = []
   },
   computed: {
     slideBarList() {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   mounted () {
-    console.log(this.data)
+    // console.log(this.data)
   },
   methods: {
     onSlideBarTouchStart(e) {
@@ -71,12 +96,69 @@ export default {
       let touchIndex = parseInt(this.touch.touchIndex) + delta
       this._scrollTo(touchIndex)
     },
+    _calculateHeight() {
+      this.listHeight = []
+      const list = this.$refs.listGroup
+      let height = 0
+      this.listHeight.push(height)
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i]
+        height += item.clientHeight
+        this.listHeight.push(height)
+      }
+    },
+    scroll(pos) {
+      this.scrollY = pos.y
+    },
     _scrollTo(index) {
+      if (!index && index !== 0) {
+        return
+      }
+      if (index < 0) {
+        index = 0
+      } else if (index > this.listHeight.length - 2) {
+        index = this.listHeight.length - 2
+      }
+      // this.currentIndex = index
+      this.scrollY = -this.listHeight[index]
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
     }
   },
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
+    scrollY(newY) {
+      const listHeight = this.listHeight
+      // 滚动到顶部 newY > 0
+      if (newY > 0) {
+        this.currentIndex = 0
+      }
+      for (let i = 0; i < listHeight.length - 1; i++) {
+        let height1 = listHeight[i]
+        let height2 = listHeight[i + 1]
+        if (-newY >= height1 && -newY < height2) {
+          this.currentIndex = i
+          this.diff = height2 + newY
+          return
+        }
+      }
+      this.currentIndex = listHeight.length - 2
+    },
+    diff(newVal) {
+      let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
+    }
+  },
   components: {
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
