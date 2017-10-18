@@ -1,12 +1,13 @@
 <template>
   <div class="singer">
-    歌手页面
+    <listview :data="singerList"></listview>
   </div>
 </template>
 
 <script>
 import { getSingerList } from 'api/singer'
 import Singer from 'common/js/singer'
+import Listview from 'base/listview/listview'
 
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'
@@ -35,7 +36,7 @@ export default {
       list.forEach((item, index) => {
         if (index < HOT_SINGER_LEN) {
           map.hot.item.push(new Singer({
-            id: item.Fsinger_id,
+            id: item.Fsinger_mid,
             name: item.Fsinger_name
           }))
         }
@@ -49,7 +50,7 @@ export default {
         }
 
         map[key].item.push(new Singer({
-          id: item.Fsinger_id,
+          id: item.Fsinger_mid,
           name: item.Fsinger_name
         }))
       })
@@ -71,6 +72,9 @@ export default {
       // console.log(hot.concat(ret))
       return hot.concat(ret)
     }
+  },
+  components: {
+    Listview
   }
 }
 </script>
