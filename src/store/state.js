@@ -1,5 +1,14 @@
+import { playMode } from 'common/js/config'
+
 const state = {
-  singer: {}
+  singer: {},
+  playing: false,
+  fullScreen: false,
+  playlist: [],
+  sequenceList: [],
+  mode: playMode.requence,
+  currentIndex: -1,
+  disc: {}
 }
 
 export default state

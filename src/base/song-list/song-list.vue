@@ -1,13 +1,13 @@
 <template>
   <div class="song-list">
     <ul>
-      <li class="item" v-for="(item, index) in songs">
+      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs">
         <!-- <div class="rank">
           <span></span>
         </div> -->
         <div class="content">
-          <h2 class="name">{{item.name}}</h2>
-          <p class="desc"><span v-for="singer in item.singers">{{singer}}.</span>{{item.ablum}}</p>
+          <h2 class="name">{{song.name}}</h2>
+          <p class="desc"><span v-for="singer in song.singers">{{singer}}.</span>{{song.ablum}}</p>
         </div>
       </li>
     </ul>
@@ -22,8 +22,13 @@
         default: []
       }
     },
+    methods: {
+      selectItem(song, index) {
+        this.$emit('select', song, index)
+      }
+    },
     mounted () {
-      console.log(this.songs)
+      // console.log(this.songs)
     }
   }
 </script>
