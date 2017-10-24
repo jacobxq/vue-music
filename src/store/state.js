@@ -6,7 +6,7 @@ const state = {
   fullScreen: false,
   playlist: [],
   sequenceList: [],
-  mode: playMode.requence,
+  mode: playMode.sequence,
   currentIndex: -1,
   disc: {}
 }

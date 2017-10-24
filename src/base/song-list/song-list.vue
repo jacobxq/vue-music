@@ -7,7 +7,7 @@
         </div> -->
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
-          <p class="desc"><span v-for="singer in song.singers">{{singer}}.</span>{{song.ablum}}</p>
+          <p class="desc">{{song.singer}}·{{song.album}}</p>
         </div>
       </li>
     </ul>

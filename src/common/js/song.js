@@ -1,36 +1,57 @@
+import {getLyric} from 'api/song'
+import {ERR_OK} from 'api/config'
+import {Base64} from 'js-base64'
+
+// import { ERR_OK } from 'common/js/config'
 export default class Song {
-  constructor({id, mid, singers, name, ablum, duration, image, url}) {
+  constructor({id, mid, singer, name, album, duration, image, url}) {
     this.id = id
     this.mid = mid
-    this.singers = singers
+    this.singer = singer
     this.name = name
-    this.ablum = ablum
+    this.album = album
     this.duration = duration
     this.image = image
     this.url = url
+  }
+
+  getLyric(mid) {
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then((res) => {
+        if (res.data.code === ERR_OK) {
+          this.lyric = Base64.decode(res.data.lyric)
+          resolve(this.lyric)
+        } else {
+          reject('no lyric') // eslint-disable-line
+        }
+      })
+    })
   }
 }
 
 export function createSong(musicData) {
   return new Song({
-    id: musicData.latest_song.songid,
-    mid: musicData.albumMID,
-    singers: filterSinger(musicData.singers),
-    name: musicData.latest_song.track_name,
-    ablum: musicData.albumName,
-    duration: musicData.listen_count,
-    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albumMID}.jpg?max_age=2592000`,
-    url: `http://ws.stream.qqmusic.qq.com/${musicData.latest_song.songid}.m4a?fromtag=46`
+    id: musicData.songid,
+    mid: musicData.songmid,
+    singer: filterSinger(musicData.singer),
+    name: musicData.songname,
+    album: musicData.albumname,
+    duration: musicData.interval,
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
+    url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
   })
 }
 
-function filterSinger(singers) {
+function filterSinger(singer) {
   let ret = []
-  if (!singers) {
-    return
+  if (!singer) {
+    return ''
   }
-  singers.forEach(item => {
-    ret.push(item.singer_name)
+  singer.forEach((s) => {
+    ret.push(s.name)
   })
-  return ret
+  return ret.join('/')
 }

@@ -34,8 +34,8 @@ export default {
     formatSongList(list) {
       let ret = []
       list.forEach((item, index) => {
-        let musicData = item
-        if (musicData.albumMID && musicData.latest_song.songid) {
+        let musicData = item.musicData
+        if (musicData.songid && musicData.albummid) {
           ret.push(createSong(musicData))
         }
       })

@@ -21,18 +21,18 @@ export function getSingerList() {
   return jsonp(url, data, options)
 }
 
-export function getSongList(id) {
-  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_album.fcg'
+export function getSongList(singerId) {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
 
   const data = Object.assign({}, commonParams, {
-    platform: 'yqq',
-    singermid: id,
-    begin: 0,
-    num: 100,
-    g_tk: '5381',
-    loginUin: 0,
     hostUin: 0,
-    needNewCode: 0
+    needNewCode: 0,
+    platform: 'yqq',
+    order: 'listen',
+    begin: 0,
+    num: 80,
+    songstatus: 1,
+    singermid: singerId
   })
 
   return jsonp(url, data, options)
