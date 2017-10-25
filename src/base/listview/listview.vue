@@ -125,6 +125,9 @@ export default {
     },
     selectItem(item) {
       this.$emit('select', item)
+    },
+    refresh() {
+      this.$refs.listview.refresh()
     }
   },
   watch: {

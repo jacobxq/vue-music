@@ -39,6 +39,7 @@ import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 import Loading from 'base/loading/loading'
+import {playlistMixin} from 'common/js/mixin'
 export default {
   data() {
     return {
@@ -52,6 +53,17 @@ export default {
     this._getDiscList()
   },
   methods: {
+    handlePlayList(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
+    imageLoad() {
+      if (this.checkImgLoad) {
+        this.$refs.scroll.refresh()
+        this.checkImgLoad = true
+      }
+    },
     _getRecommend() {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
@@ -66,14 +78,9 @@ export default {
           this.showLoading = false
         }
       })
-    },
-    imageLoad() {
-      if (this.checkImgLoad) {
-        this.$refs.scroll.refresh()
-        this.checkImgLoad = true
-      }
     }
   },
+  mixins: [playlistMixin],
   components: {
     Slider,
     Scroll,
