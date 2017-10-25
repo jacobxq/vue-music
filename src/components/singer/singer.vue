@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     handlePlayList(playlist) {
-      console.log(11)
       const bottom = playlist.length > 0 ? '60px' : 0
       this.$refs.singer.style.bottom = bottom
       this.$refs.list.refresh()

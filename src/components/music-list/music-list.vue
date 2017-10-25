@@ -86,7 +86,7 @@
         this.$refs.list.refresh()
       },
       back() {
-        this.$router.push('/singer')
+        this.$router.back()
       },
       scroll(pos) {
         this.scrollY = pos.y

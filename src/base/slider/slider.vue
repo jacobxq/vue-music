@@ -78,7 +78,6 @@ export default {
         width += sliderWidth * 2
       }
       this.$refs.sliderGroup.style.width = width + 'px'
-      // console.log(this.$refs.slider.style.width)
     },
     _initSlider () {
       this.slider = new BScroll(this.$refs.slider, {
@@ -90,8 +89,6 @@ export default {
         snapThreshold: 0.3,
         snapSpeed: 400
       })
-
-      console.log(this.slider)
 
       this.slider.on('scrollEnd', () => {
         let pageIndex = this.slider.getCurrentPage().pageX
@@ -122,7 +119,6 @@ export default {
     },
     _initDots () {
       this.dots = new Array(this.children.length)
-      console.log(this.dots)
     }
   }
 }
