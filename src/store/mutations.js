@@ -10,7 +10,7 @@ const mutation = {
   [types.SET_FULL_SCREEN](state, fullScreen) {
     state.fullScreen = fullScreen
   },
-  [types.SET_PLAY_LIST](state, playlist) {
+  [types.SET_PLAYLIST](state, playlist) {
     state.playlist = playlist
   },
   [types.SET_SEQUENCE_LIST](state, sequenceList) {
@@ -27,6 +27,9 @@ const mutation = {
   },
   [types.SET_TOP_LIST](state, topList) {
     state.topList = topList
+  },
+  [types.SET_SEARCH_HISTORY](state, history) {
+    state.searchHistory = history
   }
 }
 
