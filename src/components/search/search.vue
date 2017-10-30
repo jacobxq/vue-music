@@ -4,7 +4,11 @@
       <search-box ref="searchBox" @query="onQueryChange" :query="query"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" :data="shortcut" ref="shortcut">
+      <scroll class="shortcut" 
+              :data="shortcut" ref="shortcut" 
+              :beforeScroll="beforeScroll"
+              @beforeScroll="listScroll"
+      >
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -17,18 +21,19 @@
           <div class="search-history" v-show="searchHistory.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span class="clear">
+              <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list @select="addQuery" :searches="searchHistory"></search-list>
+            <search-list @select="addQuery" :searches="searchHistory" @delete="deleteSearchHistory"></search-list>
           </div>
         </div>
       </scroll>
     </div>
-    <div class="search-result" v-show="query">
-      <suggest :query="query" @select="saveSearch"></suggest>
+    <div class="search-result" v-show="query" ref="searchResult">
+      <suggest :query="query" @select="saveSearch" ref="suggest"></suggest>
     </div>
+    <confirm ref="confirm" text="是否清空所有搜索历史" confirmBtnText="清空" @confirm="clearSearchHistory"></confirm>
     <router-view></router-view>
   </div>
 </template>
@@ -37,15 +42,17 @@
   import SearchBox from 'base/search-box/search-box'
   import SearchList from 'base/search-list/search-list'
   import Scroll from 'base/scroll/scroll'
+  import Confirm from 'base/confirm/confirm'
   import Suggest from 'components/suggest/suggest'
   import getHotKey from 'api/search'
   import {ERR_OK} from 'api/config'
+  import {playlistMixin} from 'common/js/mixin'
   import { mapActions, mapGetters } from 'vuex'
   
   export default {
+    mixins: [playlistMixin],
     created () {
       this._getHotKey()
-      console.log(this.searchHistory)
     },
     computed: {
       shortcut() {
@@ -58,10 +65,19 @@
     data() {
       return {
         hotKey: [],
-        query: ''
+        query: '',
+        beforeScroll: true
       }
     },
     methods: {
+      handlePlayList(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : 0
+        this.$refs.searchResult.style.bottom = bottom
+        this.$refs.suggest.refresh()
+
+        this.$refs.shortcutWrapper.style.bottom = bottom
+        this.$refs.shortcut.refresh()
+      },
       onQueryChange(query) {
         this.query = query
       },
@@ -71,6 +87,12 @@
       saveSearch() {
         this.saveSearchHistory(this.query)
       },
+      showConfirm() {
+        this.$refs.confirm.show()
+      },
+      listScroll() {
+        this.$refs.searchBox.blur()
+      },
       _getHotKey() {
         getHotKey().then(res => {
           if (res.code === ERR_OK) {
@@ -79,7 +101,9 @@
         })
       },
       ...mapActions({
-        saveSearchHistory: 'saveSearchHistory'
+        saveSearchHistory: 'saveSearchHistory',
+        deleteSearchHistory: 'deleteSearchHistory',
+        clearSearchHistory: 'clearSearchHistory'
       })
     },
     watch: {
@@ -95,7 +119,8 @@
       SearchBox,
       Suggest,
       SearchList,
-      Scroll
+      Scroll,
+      Confirm
     }
   }
 </script>
