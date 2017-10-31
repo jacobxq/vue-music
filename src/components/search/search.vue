@@ -7,7 +7,7 @@
       <scroll class="shortcut" 
               :data="shortcut" ref="shortcut" 
               :beforeScroll="beforeScroll"
-              @beforeScroll="listScroll"
+              @beforeScroll="blurInput"
       >
         <div>
           <div class="hot-key">
@@ -31,7 +31,7 @@
       </scroll>
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
-      <suggest :query="query" @select="saveSearch" ref="suggest"></suggest>
+      <suggest @listScroll="blurInput" :query="query" @select="saveSearch" ref="suggest"></suggest>
     </div>
     <confirm ref="confirm" text="是否清空所有搜索历史" confirmBtnText="清空" @confirm="clearSearchHistory"></confirm>
     <router-view></router-view>
@@ -90,7 +90,7 @@
       showConfirm() {
         this.$refs.confirm.show()
       },
-      listScroll() {
+      blurInput() {
         this.$refs.searchBox.blur()
       },
       _getHotKey() {

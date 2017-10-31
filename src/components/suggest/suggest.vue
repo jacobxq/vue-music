@@ -3,6 +3,8 @@
           ref="suggest"
           pullup="pullup"
           class="suggest"
+          :beforeScroll="beforeScroll"
+          @beforeScroll="listScroll"
           @scrollToEnd="searchMore"
   >
     <ul class="suggest-list">
@@ -52,7 +54,8 @@
       return {
         hasMore: true,
         result: [],
-        pullup: true
+        pullup: true,
+        beforeScroll: true
       }
     },
     methods: {
@@ -111,6 +114,9 @@
       },
       refresh() {
         this.$refs.suggest.refresh()
+      },
+      listScroll() {
+        this.$emit('listScroll')
       },
       _genResult(data) {
         let ret = []
