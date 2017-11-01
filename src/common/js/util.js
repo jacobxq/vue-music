@@ -7,8 +7,8 @@ export function shuffle(arr) {
   for (let i = 0; i < _arr.length; i++) {
     let j = getRandomInt(0, i)
     let t = _arr[i]
-    arr[i] = _arr[j]
-    arr[j] = t
+    _arr[i] = _arr[j]
+    _arr[j] = t
   }
   return _arr
 }

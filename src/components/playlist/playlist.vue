@@ -4,20 +4,22 @@
       <div class="list-wrapper">
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
-            <span class="text"></span>
-            <span class="clear"><i class="icon-clear"></i></span>
+            <i class="icon" :class="iconMode"  @click.stop="changePlayMode"></i>
+            <span class="text">{{modeText}}</span>
+            <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
         <scroll ref="listContent" :data="sequenceList" class="list-content" :refreshDelay="refreshDelay">
           <transition-group ref="list" name="list" tag="ul">
-            <li :key="item.id" class="item" v-for="(item, index) in sequenceList">
+            <li :key="item.id" class="item" v-for="(item, index) in sequenceList"
+                @click="selectItem(item, index)"
+            >
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
                 <i></i>
               </span>
-              <span class="delete">
+              <span class="delete" @click.stop="deleteOne(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
@@ -33,14 +35,19 @@
           <span>关闭</span>
         </div>
       </div>
+      <confirm ref="confirm" confirmBtnText="清空" text="是否清空播放列表" @confirm="confirmClear"></confirm>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapActions} from 'vuex'
+  import {playMode} from 'common/js/config'
+  import { playerMixin } from 'common/js/mixin'
+  import Confirm from 'base/confirm/confirm'
   export default {
+    mixins: [playerMixin],
     data() {
       return {
         showFlag: false,
@@ -48,9 +55,13 @@
       }
     },
     computed: {
+      modeText() {
+        return this.mode === playMode.random ? '随机播放' : this.mode === playMode.sequence ? '顺序播放' : '单曲循环'
+      },
       ...mapGetters([
         'sequenceList',
-        'currentSong'
+        'currentSong',
+        'mode'
       ])
     },
     methods: {
@@ -58,7 +69,8 @@
         this.showFlag = true
         setTimeout(() => {
           this.$refs.listContent.refresh()
-        })
+          this.scrollToCurrent(this.currentSong)
+        }, 20)
       },
       hide() {
         this.showFlag = false
@@ -68,10 +80,53 @@
           return 'icon-play'
         }
         return ''
+      },
+      selectItem(item, index) {
+        if (this.mode === playMode.random) {
+          index = this.playlist.findIndex((song) => {
+            return song.id === item.id
+          })
+        }
+        this.setCurrentIndex(index)
+        this.setPlayState(true)
+      },
+      scrollToCurrent(current) {
+        const index = this.sequenceList.findIndex((item) => {
+          return current.id === item.id
+        })
+        this.$refs.listContent.scrollToElement(this.$refs.list.$el.children[index], 300)
+      },
+      deleteOne(song) {
+        this.deleteSong(song)
+        if (!this.playlist.length) {
+          this.showFlag = false
+        }
+      },
+      showConfirm() {
+        this.$refs.confirm.show()
+      },
+      confirmClear() {
+        this.deleteSongList()
+        this.hide()
+      },
+      ...mapActions([
+        'deleteSong',
+        'deleteSongList'
+      ])
+    },
+    watch: {
+      currentSong(newSong, oldSong) {
+        if (!this.showFlag && newSong.id === oldSong.id) {
+          return false
+        }
+        setTimeout(() => {
+          this.scrollToCurrent(this.currentSong)
+        }, 20)
       }
     },
     components: {
-      Scroll
+      Scroll,
+      Confirm
     }
   }
 </script>
