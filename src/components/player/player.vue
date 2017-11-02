@@ -102,7 +102,7 @@
 <script type="text/ecmascript-6">
   import progressBar from 'base/progress-bar/progress-bar'
   import progressCircle from 'base/progress-circle/progress-circle'
-  import { mapGetters, mapMutations } from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import animations from 'create-keyframe-animation'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
@@ -262,6 +262,7 @@
       },
       ready() {
         this.songReady = true
+        this.savePlayHistory(this.currentSong)
       },
       error() {
         this.songReady = true
@@ -371,6 +372,9 @@
       },
       showPlaylist() {
         this.$refs.playlist.show()
+        setTimeout(() => {
+          this.$refs.playlist.refresh()
+        }, 200)
       },
       _pad(num) {
         return num > 9 ? num : '0' + num
@@ -392,7 +396,10 @@
       },
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN'
-      })
+      }),
+      ...mapActions([
+        'savePlayHistory'
+      ])
     },
     watch: {
       currentSong(newSong, oldSong) {

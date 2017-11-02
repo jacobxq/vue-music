@@ -33,7 +33,6 @@
     },
     created () {
       this.$watch('query', debounce((newVal) => {
-        console.log(newVal)
         this.$emit('query', newVal)
       }, 200))
     }

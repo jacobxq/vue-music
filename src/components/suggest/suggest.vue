@@ -97,7 +97,6 @@
         }
       },
       selectItem(item) {
-        console.log(item)
         if (item.type === TYPE_SINGER) {
           let singer = new Singer({
             id: item.singermid,
