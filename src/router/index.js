@@ -55,7 +55,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/search'
+      redirect: '/recommend'
     },
     {
       path: '/recommend',
