@@ -9,6 +9,9 @@
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{song.singer}}·{{song.album}}</p>
         </div>
+        <span class="delete" @click.stop="deleteOne(song)" v-show="showDelete">
+          <i class="icon-delete"></i>
+        </span>
       </li>
     </ul>
   </div>
@@ -20,11 +23,18 @@
       songs: {
         type: Array,
         default: []
+      },
+      showDelete: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
       selectItem(song, index) {
         this.$emit('select', song, index)
+      },
+      deleteOne(song) {
+        this.$emit('delete', song)
       }
     },
     mounted () {
@@ -44,6 +54,7 @@
       box-sizing: border-box
       height: 64px
       font-size: $font-size-medium
+      position: relative
       .rank
         flex: 0 0 25px
         width: 25px
@@ -74,4 +85,6 @@
           no-wrap()
           margin-top: 4px
           color: $color-text-d
+      .delete
+        padding: 10px 10px;
 </style>

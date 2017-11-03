@@ -35,7 +35,8 @@ export const playerMixin = {
       'playlist',
       'currentSong',
       'mode',
-      'sequenceList'
+      'sequenceList',
+      'favoriteList'
     ])
   },
   methods: {
@@ -57,13 +58,37 @@ export const playerMixin = {
       this.resetCurrentIndex(list)
       this.setPlayList(list)
     },
+    getFavoriteIcon(song) {
+      if (this._isFavorite(song)) {
+        return 'icon-favorite'
+      } else {
+        return 'icon-not-favorite'
+      }
+    },
+    toggleFavorite(song) {
+      if (this._isFavorite(song)) {
+        this.deleteFavoriteList(song)
+      } else {
+        this.saveFavoriteList(song)
+      }
+    },
+    _isFavorite(song) {
+      var index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
+    },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayState: 'SET_PLAYING_STATE',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayMode: 'SET_MODE',
       setPlayList: 'SET_PLAY_LIST'
-    })
+    }),
+    ...mapActions([
+      'saveFavoriteList',
+      'deleteFavoriteList'
+    ])
   }
 }
 
@@ -92,10 +117,10 @@ export const searchMixin = {
     blurInput() {
       this.$refs.searchBox.blur()
     },
-    ...mapActions({
-      saveSearchHistory: 'saveSearchHistory',
-      deleteSearchHistory: 'deleteSearchHistory',
-      clearSearchHistory: 'clearSearchHistory'
-    })
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory',
+      'clearSearchHistory'
+    ])
   }
 }
